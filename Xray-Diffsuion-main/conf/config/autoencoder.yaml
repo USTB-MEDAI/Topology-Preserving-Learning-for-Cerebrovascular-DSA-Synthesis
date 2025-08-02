@@ -1,0 +1,66 @@
+name: 'autoencoder'
+#****** Data settings ******
+image_size: 256 # resize input images to this size 128
+# pad_channel: 16
+resize_size: [256,256]             #resize_size: [128,128,128]
+
+#jilu 3.10(990epoch,ssim82) 256 256,256 base_learning_rate: 0.00001 disc_weight: 0.7 resolution: 256 ch: 128 #mdf32 ch_mult: [1,2,4,8]
+#3.21 xun 128 other tongshang  resolution: 128
+
+# cond_path: "/nvme/Pancreas-Dataset/pancreas_diff/cond_data/"
+# data_path: "/disk/ssy/data/drr/zhougu/zhougunii"   #zhougu
+##data_path: "/disk/ssy/data/drr/feijiejie/all/"   #feijiejie
+# data_path: "/disk/ssy/data/drr/pengu/all/"   #pengu
+# data_path: "/disk/ssy/data/drr/yixianyan/yixianyan_nii/"   #yixianyan
+##
+
+# data_path: "/disk/ssy/data/drr/jizhu/jizhunii"
+# data_path: "/disk/ssy/data/DIAS/myDIAS/training/imagesjpg"
+# data_path: "/disk/ssy/data/DIAS/myDIAS/training/labelsjpg1"
+# data_path: "/disk/ssy/data/DIAS/myDIAS/DIAS_imax_1ch"
+# data_path: "/disk/ssy/data/DIAS/myDIAS/ALL_412"
+data_path: "/disk/ssy/data/DIAS/myDIAS/hand/handtest"
+
+output_dir : "./logs/${config.name}"  # the traning logs saved
+  
+model:
+  base_learning_rate: 0.00002  #zhougu 0.00001 others: 0.0001 0.0001(3.8) 256:2,1,,  128:1
+  sync_dist: True
+  # params:
+  monitor: "val/rec_loss"
+  embed_dim: 4
+  lossconfig:
+    # target: ldm.modules.losses.LPIPSWithDiscriminator
+    # params:
+    disc_start: 10000
+    kl_weight: 1.0e-4
+    disc_weight: 0.7   #0.5mdf  3.8.0 1.0
+    highlow_weight: 0
+    high_limit: 0.04
+    low_limit: 0.04
+    disc_in_channels: 1
+    perceptual_weight: 0   #0mdf
+
+  ddconfig:
+    double_z: True
+    z_channels: 4
+    resolution: 256 #128
+    in_channels: 1
+    out_ch: 1
+    ch: 128 #mdf32
+    ch_mult: [1,2,4,4]  # num_down = len(ch_mult)-1  #[1,2,2,2,4]  [1,2,4,4]  #mdf[1,2,4,4] 
+    num_res_blocks: 2
+    attn_resolutions: []
+    dropout: 0.0
+
+trainer:
+  benchmark: True
+  # accumulate_grad_batches: 2
+  # devices: [1]
+  devices: [1]
+  accelerator: "auto"
+  max_epochs: 1000
+  fast_dev_run: False
+  # precision: "bf16-mixed"
+  check_val_every_n_epoch: 10
+  # strategy: "ddp_find_unused_parameters_true"

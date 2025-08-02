@@ -1,0 +1,18 @@
+/disk/ssy/pyproj/bishe/controlnet-main/models/cldm_v15.yaml
+详细配置，模型网络层数等，基本没修改
+
+/disk/ssy/pyproj/bishe/controlnet-main/tutorial_train.py
+训练的配置基本就在这里面，没有单独yaml
+gpus=[1] 改卡在这
+
+/disk/ssy/pyproj/bishe/controlnet-main/tutorial_dataset2.py
+用这个加载数据
+
+./ldm/modules/encoders/modules.py:99
+vocab.json 改成本地路径
+
+/disk/ssy/pyproj/bishe/controlnet-main/cldm/logger.py
+加了全局步数判别操作
+
+/disk/ssy/pyproj/bishe/controlnet-main/cldm/cldm.py
+字典记录 log_image记录训练过程中的生成图像，注释掉了conditioning 文本可视化
